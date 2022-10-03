@@ -1,0 +1,19 @@
+.profile__avatar-edit {
+  width: 120px;
+  height: 120px;
+  background-color: transparent;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  padding: 0;
+  background-position: 50%;
+}
+
+.profile__avatar-edit:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  transition: 0.8s linear;
+  background-image: url(../../../images/pencil.svg);
+}

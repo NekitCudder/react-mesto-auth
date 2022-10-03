@@ -1,0 +1,12 @@
+.popup__caption {
+  margin-bottom: 48px;
+  border: 0;
+  border-bottom: 1px solid #000;
+  padding: 0 0 13px 0;
+}
+
+@media screen and (max-width:534px) {
+  .popup__caption {
+    margin-bottom: 45px;
+  }
+}
