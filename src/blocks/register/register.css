@@ -1,0 +1,7 @@
+.register {
+  display: flex;
+  max-width: 358px;
+  margin: 0 auto;
+  padding: 60px 0 0 0;
+  padding-bottom: 48px;
+}

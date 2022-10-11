@@ -1,0 +1,34 @@
+.header__auth {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+  color: #fff;
+  text-decoration: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: right;
+}
+
+.header__auth:hover {
+  opacity: 0.8;
+  transition: opacity 0.2s linear;
+}
+
+@media screen and (max-width:1152px) {
+  .header__auth {
+    margin-right: 30px;
+  }
+}
+
+@media screen and (max-width:500px) {
+  .header__auth {
+    font-size: 14px;
+    line-height: 17px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: end;
+    margin: 0;
+  }
+}
