@@ -16,4 +16,4 @@
 - методология БЭМ
 
 ---
-[Ссылка на проект](https://nekitcudder.github.io/mesto-react/)
+[Ссылка на проект](https://nekitcudder.github.io/react-mesto-auth/)
