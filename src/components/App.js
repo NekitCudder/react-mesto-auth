@@ -39,13 +39,20 @@ function App() {
   const tokenCheck = () => {
     const jwt = localStorage.getItem("jwt");
     if (jwt) {
-      auth.checkToken(jwt).then((res) => {
-        if (res) {
-          setEmail(res.data.email);
-          setLoggedIn(true);
+      auth.checkToken(jwt)
+        .then((res) => {
+          if (res) {
+            setEmail(res.data.email);
+            setLoggedIn(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
           history.push("/");
         }
-      });
+        );
     }
   }
 
@@ -53,7 +60,7 @@ function App() {
     tokenCheck();
   }, [])
 
-  //загрузка данных пользвоателя
+  //загрузка данных пользователя
   React.useEffect(() => {
     api.getUserInfo()
       .then((item) => {

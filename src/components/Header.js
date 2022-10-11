@@ -7,6 +7,7 @@ function Header({ email }) {
   function signOut() {
     localStorage.removeItem('jwt');
     history.push('/sign-in');
+    
   }
   return (
     <header className="header">
