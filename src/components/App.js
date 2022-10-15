@@ -14,6 +14,8 @@ import InfoTooltip from './InfoTooltip';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import api from '../utils/api';
 import * as auth from '../utils/auth.js'
+import errorImage from '../images/error.svg';
+import successImage from '../images/success.svg';
 
 function App() {
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
@@ -28,48 +30,83 @@ function App() {
   const [email, setEmail] = React.useState("");
   let history = useHistory();
 
-  function handleLogin() {
-    setLoggedIn(true);
-  };
-
-  function handleInfoTooltipPopupOpen() {
-    setInfoTooltipPopupOpen(true);
+  function handleLogin(password, email) {
+    auth.authorize(password, email)
+      .then((token) => {
+        console.log(token);
+        auth.getContent(token)
+          .then((res) => {
+            console.log(res);
+            setEmail(res.data.email);
+            setLoggedIn(true);
+            history.push('/');
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        handleInfoTooltipPopupOpen();
+        setInfoMessage({
+          image: errorImage,
+          description: 'Что-то пошло не так! Попробуйте ещё раз.'
+        });
+      });
   }
 
-  const tokenCheck = () => {
+  function handleRegister(password, email) {
+    auth.register(password, email)
+      .then((res) => {
+        console.log(res);
+        setEmail(res.data.email);
+        handleInfoTooltipPopupOpen();
+        setInfoMessage({
+          image: successImage,
+          description: 'Вы успешно зарегистрировались!'
+        });
+        history.push('/sign-in');
+      })
+      .catch((err) => {
+        console.log('Ошибка регистрации', err);
+        handleInfoTooltipPopupOpen();
+        setInfoMessage({
+          image: errorImage,
+          description: 'Что-то пошло не так! Попробуйте ещё раз.'
+        });
+      });
+  }
+
+  const checkToken = () => {
     const jwt = localStorage.getItem("jwt");
     if (jwt) {
-      auth.checkToken(jwt)
+      auth.getContent (jwt)
         .then((res) => {
           if (res) {
             setEmail(res.data.email);
             setLoggedIn(true);
+            history.push('/');
           }
         })
         .catch((err) => {
           console.log(err);
-        })
-        .finally(() => {
-          history.push("/");
-        }
-        );
+        });
     }
   }
 
   React.useEffect(() => {
-    tokenCheck();
+    checkToken();
   }, [])
 
   //загрузка данных пользователя
   React.useEffect(() => {
-    api.getUserInfo()
-      .then((item) => {
-        setCurrentUser(item);
-      })
-      .catch((err) => {
-        console.log(`Ошибка загрузки данных пользователя с сервера: ${err}`);
-      });
-  }, [email]);
+    if (loggedIn) {
+      api.getUserInfo()
+        .then((item) => {
+          setCurrentUser(item);
+        })
+        .catch((err) => {
+          console.log(`Ошибка загрузки данных пользователя с сервера: ${err}`);
+        });
+    }
+  }, [loggedIn]);
 
   function handleEditAvatarClick() {
     setEditAvatarPopupOpen(true);
@@ -79,6 +116,9 @@ function App() {
   }
   function handleAddPlaceClick() {
     setAddPlacePopupOpen(true);
+  }
+  function handleInfoTooltipPopupOpen() {
+    setInfoTooltipPopupOpen(true);
   }
 
   function closeAllPopups() {
@@ -95,8 +135,10 @@ function App() {
   //функция редактирования данных пользователя
   function handleUpdateUser(data) {
     api.editUserInfo(data)
-      .then((res) => setCurrentUser(res));
-    closeAllPopups()
+      .then((res) => {
+        setCurrentUser(res);
+        closeAllPopups();
+      })
       .catch((err) => {
         console.log(`Ошибка редактирования данных пользователя: ${err}`);
       });
@@ -105,8 +147,10 @@ function App() {
   //фнукция загрузки аватара
   function handleUpdateAvatar(data) {
     api.editAvatar(data)
-      .then((res) => setCurrentUser(res));
-    closeAllPopups()
+      .then((res) => {
+        setCurrentUser(res);
+        closeAllPopups();
+      })
       .catch((err) => {
         console.log(`Ошибка загрузки нового аватара: ${err}`);
       });
@@ -126,14 +170,16 @@ function App() {
 
   //загрузка карточек с сервера
   React.useEffect(() => {
-    api.getInitialCards()
-      .then((data) => {
-        setCards(data)
-      })
-      .catch((err) => {
-        console.log(`Ошибка загрузки карточек с сервера: ${err}`);
-      });
-  }, []);
+    if (loggedIn) {
+      api.getInitialCards()
+        .then((data) => {
+          setCards(data)
+        })
+        .catch((err) => {
+          console.log(`Ошибка загрузки карточек с сервера: ${err}`);
+        });
+    }
+  }, [loggedIn]);
 
   //функция лайка карточки
   function handleCardLike(card) {
@@ -179,16 +225,16 @@ function App() {
           />
 
           <Route path='/sign-in'>
-            <Login onLogin={handleInfoTooltipPopupOpen} handleLogin={handleLogin} onUpdateInfoMessage={setInfoMessage} />
+            <Login onInfoTooltip={handleInfoTooltipPopupOpen} onLogin={handleLogin} />
           </Route>
 
           <Route path='/sign-up'>
-            <Register onLogin={handleInfoTooltipPopupOpen} onUpdateInfoMessage={setInfoMessage} />
+            <Register onInfoTooltip={handleInfoTooltipPopupOpen} onRegister={handleRegister} />
           </Route>
 
-          <Route>
+          <ProtectedRoute>
             {loggedIn ? <Redirect to='/' /> : <Redirect to='/sign-in' />}
-          </Route>
+          </ProtectedRoute>
 
         </Switch>
 
