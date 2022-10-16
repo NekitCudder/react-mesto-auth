@@ -203,7 +203,7 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
 
-        <Header email={email} />
+        <Header email={email} setEmail={setEmail}/>
 
         <Switch>
           <ProtectedRoute
