@@ -32,15 +32,11 @@ function App() {
 
   function handleLogin(password, email) {
     auth.authorize(password, email)
-      .then((token) => {
-        console.log(token);
-        auth.getContent(token)
-          .then((res) => {
-            console.log(res);
-            setEmail(res.data.email);
-            setLoggedIn(true);
-            history.push('/');
-          });
+      .then((res) => {
+        console.log(res);
+        setEmail(email);
+        setLoggedIn(true);
+        history.push('/');
       })
       .catch((err) => {
         console.log(err);
@@ -55,8 +51,7 @@ function App() {
   function handleRegister(password, email) {
     auth.register(password, email)
       .then((res) => {
-        console.log(res);
-        setEmail(res.data.email);
+        console.log(res);     
         handleInfoTooltipPopupOpen();
         setInfoMessage({
           image: successImage,
@@ -77,7 +72,7 @@ function App() {
   const checkToken = () => {
     const jwt = localStorage.getItem("jwt");
     if (jwt) {
-      auth.getContent (jwt)
+      auth.getContent(jwt)
         .then((res) => {
           if (res) {
             setEmail(res.data.email);
@@ -208,7 +203,7 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
 
-        <Header email={email} />
+        <Header email={email} setEmail={setEmail}/>
 
         <Switch>
           <ProtectedRoute
